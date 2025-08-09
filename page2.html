@@ -9,7 +9,8 @@
 <body>
   <!-- Floating profile overlay -->
   <div class="profile-floating">
-    <img src="images/profile.jpg" alt="Джон Крылов">
+    <!-- Updated path: profile picture is stored in the root for GitHub Pages -->
+    <img src="profile.jpg" alt="Джон Крылов">
     <div class="profile-info">
       <p class="profile-name">Джон Крылов</p>
       <p class="profile-role">Режиссёр монтажа, моушн дизайнер</p>
@@ -85,17 +86,10 @@
         node.appendChild(inputPort);
         node.appendChild(outputPort);
       });
-      // Precompute parallax factors for each node
-      const parallaxFactors = nodes.map((_, idx) => {
-        const direction = idx % 2 === 0 ? -1 : 1;
-        return direction * (0.02 + Math.random() * 0.02);
-      });
+      // Remove horizontal parallax: reset any transforms when scrolling
       function updateParallax() {
-        const scrollY = window.scrollY || window.pageYOffset;
-        nodes.forEach((node, idx) => {
-          const factor = parallaxFactors[idx];
-          const translateX = scrollY * factor;
-          node.style.transform = `translateX(${translateX}px)`;
+        nodes.forEach(node => {
+          node.style.transform = '';
         });
       }
       function updateConnectors() {

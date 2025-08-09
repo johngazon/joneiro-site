@@ -9,7 +9,10 @@
 <body>
   <!-- Floating profile overlay -->
   <div class="profile-floating">
-    <img src="images/profile.jpg" alt="Джон Крылов">
+    <!-- Use a relative path without the images/ prefix because the profile
+         picture lives at the project root on GitHub. Removing the extra
+         directory prevents broken image links when the site is deployed. -->
+    <img src="profile.jpg" alt="Джон Крылов">
     <div class="profile-info">
       <p class="profile-name">Джон Крылов</p>
       <p class="profile-role">Режиссёр монтажа, моушн дизайнер</p>
@@ -141,19 +144,14 @@
         node.appendChild(inputPort);
         node.appendChild(outputPort);
       });
-      // Precompute parallax factors for each node (alternate directions and speeds)
-      const parallaxFactors = nodes.map((_, idx) => {
-        const direction = idx % 2 === 0 ? -1 : 1;
-        // randomised factor between 0.02 and 0.04
-        return direction * (0.02 + Math.random() * 0.02);
-      });
+      // Disable the parallax effect on scroll. Previously each node was
+      // translated horizontally based on scroll position. To create a more
+      // stable reading experience we simply reset any inline transforms on
+      // nodes. This function is still called on scroll to keep API
+      // compatibility with the rest of the script.
       function updateParallax() {
-        const scrollY = window.scrollY || window.pageYOffset;
-        nodes.forEach((node, idx) => {
-          const factor = parallaxFactors[idx];
-          const translateX = scrollY * factor;
-          // apply horizontal translation via inline style
-          node.style.transform = `translateX(${translateX}px)`;
+        nodes.forEach(node => {
+          node.style.transform = '';
         });
       }
       function updateConnectors() {

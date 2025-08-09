@@ -315,6 +315,50 @@ p {
     text-decoration: underline;
 }
 
+/*
+ * Responsive tweaks for small screens
+ * On very narrow devices the layout needs to adjust so that content
+ * remains readable. The following media query reduces padding and
+ * margins, resizes the floating profile overlay and hides the
+ * connector wires/ports. Hiding the connectors on mobile keeps the
+ * interface uncluttered and avoids horizontal scrolling. If the
+ * screen width is below 600px the nodes stack edge‑to‑edge and the
+ * profile overlay stretches across the top with smaller avatar.
+ */
+@media (max-width: 600px) {
+  main {
+    max-width: 100%;
+    /* reduce the top padding so content starts closer to the top */
+    padding: 120px 10px 20px 10px;
+  }
+  .node {
+    padding: 16px;
+    margin-bottom: 24px;
+  }
+  /* Make the profile overlay span the width of the screen */
+  .profile-floating {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    width: auto;
+    padding: 10px;
+    flex-direction: row;
+  }
+  .profile-floating img {
+    width: 60px;
+    height: 60px;
+    margin-right: 10px;
+  }
+  /* Hide connectors and ports on mobile for simplicity */
+  .connectors {
+    display: none;
+  }
+  .input-port,
+  .output-port {
+    display: none;
+  }
+}
+
 /* Floating animation for profile overlay */
 @keyframes floatAnim {
     0% { transform: translateY(0px) translateX(0px); }
