@@ -348,7 +348,13 @@ p {
 .gallery-track img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    /* Ensure the entire photo is visible within the slide. Use contain
+       instead of cover so that the image scales down to fit the height,
+       leaving horizontal letterboxing if necessary. Position the image
+       centrally so any empty space appears evenly on both sides. */
+    object-fit: contain;
+    object-position: center;
+    background-color: #121212;
     border-radius: 16px;
     flex-shrink: 0;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
