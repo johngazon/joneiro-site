@@ -390,37 +390,92 @@ p {
  * visible on screen even as the user scrolls, providing easy access
  * to key actions at any point in the article. On large screens the
  * container is positioned mid‑right and stacked vertically. On
- * mobile devices the buttons stack horizontally and sit along the
- * bottom edge.
+ * mobile devices the buttons sit along the bottom edge and stretch
+ * evenly across the width.
+ *
+ * Each button uses dark glassy backgrounds with coloured accent
+ * bars on the left to echo the node editor theme. Typography is
+ * consistent with the rest of the site: uppercase text, subtle
+ * letter‑spacing and equal weight. The accent colours correspond to
+ * different actions: pink for the purchase action, blue for course
+ * details and orange for the unique method.
  */
 .cta-fixed {
   position: fixed;
-  /* Centre the CTA vertically so it sits halfway down the screen on desktop */
+  /* Position the CTA block at mid‑page so it floats around the middle
+     of the viewport without overlapping the hero heading. */
   top: 50%;
   right: 20px;
-  /* Translate up by 50% of its own height to achieve vertical centring */
-  transform: translateY(-50%);
+  /* Do not vertically translate; the top value alone controls position */
+  transform: none;
   display: flex;
   flex-direction: column;
   gap: 16px;
   z-index: 10000;
 }
 
-/* Ensure CTA buttons have consistent sizing and styling */
+/* Base button styles for floating CTAs */
 .cta-fixed .btn {
-  /* Increase fixed‑button width and ensure consistent sizing */
-  width: 200px;
-  text-align: center;
-  border-radius: 14px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
-  opacity: 0.97;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 190px;
+  padding: 14px 18px;
+  font-family: inherit;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.85rem;
+  color: #ffffff;
+  /* Use a darker translucent panel so that connectors don't show through
+     the buttons. The dark tone complements the site background while
+     retaining a hint of transparency for a glassy feel. */
+  background: rgba(10, 10, 14, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: background 0.2s ease, transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-/* Style for the unique method button. Use an orange hue to
-   distinguish it from the course button while keeping it in the
-   same accent family as other nodes */
-.btn-method {
+/* Accent bar pseudo‑element on the left of each button */
+.cta-fixed .btn::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  border-radius: 12px 0 0 12px;
+}
+
+/* Individual accent colours for buttons */
+.btn-primary::before {
+  background-color: #ef476f;
+}
+.btn-secondary::before {
+  background-color: #2196f3;
+}
+.btn-accent::before {
   background-color: #ff9800;
+}
+
+/* Hover and active states */
+.cta-fixed .btn:hover:not(.is-disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+}
+.cta-fixed .btn:active:not(.is-disabled) {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+/* Disabled state styling */
+.cta-fixed .btn.is-disabled {
+  opacity: 0.6;
+  cursor: default;
 }
 
 /* Responsive adjustments for small screens */
@@ -436,8 +491,9 @@ p {
   }
   .cta-fixed .btn {
     width: auto;
-    padding: 10px 14px;
-    font-size: 0.9rem;
+    flex: 1 1 0;
+    padding: 12px 14px;
+    font-size: 0.8rem;
   }
 }
 
