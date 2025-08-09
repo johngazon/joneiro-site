@@ -27,6 +27,25 @@
       <h1>Как подключить ComfyUI к рабочему процессу и получить +15 свободных часов в неделю — с готовым сценарием и без технического бэкграунда.</h1>
     </div>
 
+    <!-- Photo gallery node: a scrollable strip of recent photos -->
+    <div class="node accent-orange gallery-node">
+      <div class="gallery-images">
+        <img src="images/gallery/photo_2024-03-14_17-14-06.jpg" alt="Photo 1">
+        <img src="images/gallery/photo_2024-03-14_17-14-07.jpg" alt="Photo 2">
+        <img src="images/gallery/photo_2024-03-26_18-29-55.jpg" alt="Photo 3">
+        <img src="images/gallery/photo_2024-04-04_12-58-24.jpg" alt="Photo 4">
+        <img src="images/gallery/photo_2024-04-08_15-27-59.jpg" alt="Photo 5">
+        <img src="images/gallery/photo_2025-01-22_19-31-26.jpg" alt="Photo 6">
+        <img src="images/gallery/photo_2025-01-22_19-31-27.jpg" alt="Photo 7">
+        <img src="images/gallery/photo_2025-01-23_22-14-19.jpg" alt="Photo 8">
+        <img src="images/gallery/photo_2025-01-24_18-48-39.jpg" alt="Photo 9">
+        <img src="images/gallery/photo_2025-01-25_15-49-19 (2).jpg" alt="Photo 10">
+        <img src="images/gallery/photo_2025-01-25_15-49-19.jpg" alt="Photo 11">
+        <img src="images/gallery/photo_2025-01-27_00-21-07 (2).jpg" alt="Photo 12">
+        <img src="images/gallery/photo_2025-01-27_00-21-07.jpg" alt="Photo 13">
+      </div>
+    </div>
+
     <!-- Introduction node -->
     <div class="node accent-pink">
       <h2>Почему это отличается от всего, что вы видели до этого момента</h2>
@@ -222,6 +241,47 @@
       updateConnectors();
       window.addEventListener('resize', updateConnectors);
       window.addEventListener('scroll', onScroll);
+
+      // Automatically scroll the photo gallery when the user is not
+      // interacting with it. This gives the gallery a lively feel
+      // without requiring manual swipes. When the user scrolls or
+      // interacts with the gallery, auto‑scroll pauses and then
+      // resumes after a short delay.
+      const galleryContainer = document.querySelector('.gallery-images');
+      if (galleryContainer) {
+        let autoScrollDirection = 1;
+        let autoScrollEnabled = true;
+        let autoScrollResumeTimeout;
+        function autoScrollStep() {
+          if (autoScrollEnabled) {
+            // increment scrollLeft; speed of 1px per frame yields
+            // visible movement without being too fast. Adjust by
+            // multiplying with the direction. If we've reached
+            // either end of the scroll range, invert direction.
+            galleryContainer.scrollLeft += autoScrollDirection * 1;
+            if (galleryContainer.scrollLeft + galleryContainer.clientWidth >= galleryContainer.scrollWidth - 1) {
+              autoScrollDirection = -1;
+            }
+            if (galleryContainer.scrollLeft <= 0) {
+              autoScrollDirection = 1;
+            }
+          }
+          requestAnimationFrame(autoScrollStep);
+        }
+        // Start the auto scroll loop
+        requestAnimationFrame(autoScrollStep);
+        // Pause auto scroll when the user manually scrolls the gallery
+        function pauseAutoScroll() {
+          autoScrollEnabled = false;
+          clearTimeout(autoScrollResumeTimeout);
+          autoScrollResumeTimeout = setTimeout(() => {
+            autoScrollEnabled = true;
+          }, 3000);
+        }
+        galleryContainer.addEventListener('scroll', pauseAutoScroll, { passive: true });
+        galleryContainer.addEventListener('wheel', pauseAutoScroll, { passive: true });
+        galleryContainer.addEventListener('touchstart', pauseAutoScroll, { passive: true });
+      }
     });
   </script>
 </body>

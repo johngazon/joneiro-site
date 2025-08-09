@@ -16,6 +16,12 @@ body {
         4px 4px,
         50px 50px,
         50px 50px;
+
+    /* Prevent the page from acquiring a horizontal scrollbar. All
+       horizontally scrolling elements (e.g., the gallery) manage
+       their own overflow, while the body remains locked to the
+       viewport width. */
+    overflow-x: hidden;
 }
 
 /* Floating color blobs to add visual interest */
@@ -313,6 +319,37 @@ p {
     font-size: 0.9rem;
     color: #21cbf3;
     text-decoration: underline;
+}
+
+/* Gallery styles: horizontally scrollable strip of images inside a node */
+/* Gallery styling: large, elegant strip of photos */
+/* The gallery node itself hides horizontal overflow so that
+   the page does not scroll sideways. Only the internal
+   gallery-images container scrolls. */
+.gallery-node {
+    overflow: hidden;
+}
+/* The inner container displays photos in a row and allows
+   horizontal scrolling. A small gap and smooth scrolling
+   create a polished look. */
+.gallery-images {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding: 12px 0;
+    scroll-behavior: smooth;
+}
+/* Individual photos in the gallery are larger and have
+   rounded corners with a subtle shadow. They do not shrink
+   below their natural width to maintain aspect ratio. */
+.gallery-images img {
+    height: 200px;
+    width: auto;
+    border-radius: 12px;
+    flex-shrink: 0;
+    border: 2px solid #3b3b3b;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    object-fit: cover;
 }
 
 /*
