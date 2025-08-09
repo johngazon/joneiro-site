@@ -382,6 +382,65 @@ p {
     background: rgba(255, 255, 255, 0.9);
 }
 
+/* ------------------------------------------------------------------ */
+/* Floating Call‑To‑Action (CTA) Buttons                             */
+/*
+ * The cta‑fixed container holds the primary actions (Купить,
+ * Подробнее о курсе, Узнать об уникальном методе). It stays
+ * visible on screen even as the user scrolls, providing easy access
+ * to key actions at any point in the article. On large screens the
+ * container is positioned mid‑right and stacked vertically. On
+ * mobile devices the buttons stack horizontally and sit along the
+ * bottom edge.
+ */
+.cta-fixed {
+  position: fixed;
+  /* Centre the CTA vertically so it sits halfway down the screen on desktop */
+  top: 50%;
+  right: 20px;
+  /* Translate up by 50% of its own height to achieve vertical centring */
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  z-index: 10000;
+}
+
+/* Ensure CTA buttons have consistent sizing and styling */
+.cta-fixed .btn {
+  /* Increase fixed‑button width and ensure consistent sizing */
+  width: 200px;
+  text-align: center;
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+  opacity: 0.97;
+}
+
+/* Style for the unique method button. Use an orange hue to
+   distinguish it from the course button while keeping it in the
+   same accent family as other nodes */
+.btn-method {
+  background-color: #ff9800;
+}
+
+/* Responsive adjustments for small screens */
+@media (max-width: 600px) {
+  .cta-fixed {
+    top: auto;
+    bottom: 10px;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    flex-direction: row;
+    gap: 10px;
+  }
+  .cta-fixed .btn {
+    width: auto;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+  }
+}
+
 /*
  * Responsive tweaks for small screens
  * On very narrow devices the layout needs to adjust so that content
