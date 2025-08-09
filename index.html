@@ -29,20 +29,23 @@
 
     <!-- Photo gallery node: a scrollable strip of recent photos -->
     <div class="node accent-orange gallery-node">
-      <div class="gallery-images">
-        <img src="images/gallery/photo_2024-03-14_17-14-06.jpg" alt="Photo 1">
-        <img src="images/gallery/photo_2024-03-14_17-14-07.jpg" alt="Photo 2">
-        <img src="images/gallery/photo_2024-03-26_18-29-55.jpg" alt="Photo 3">
-        <img src="images/gallery/photo_2024-04-04_12-58-24.jpg" alt="Photo 4">
-        <img src="images/gallery/photo_2024-04-08_15-27-59.jpg" alt="Photo 5">
-        <img src="images/gallery/photo_2025-01-22_19-31-26.jpg" alt="Photo 6">
-        <img src="images/gallery/photo_2025-01-22_19-31-27.jpg" alt="Photo 7">
-        <img src="images/gallery/photo_2025-01-23_22-14-19.jpg" alt="Photo 8">
-        <img src="images/gallery/photo_2025-01-24_18-48-39.jpg" alt="Photo 9">
-        <img src="images/gallery/photo_2025-01-25_15-49-19 (2).jpg" alt="Photo 10">
-        <img src="images/gallery/photo_2025-01-25_15-49-19.jpg" alt="Photo 11">
-        <img src="images/gallery/photo_2025-01-27_00-21-07 (2).jpg" alt="Photo 12">
-        <img src="images/gallery/photo_2025-01-27_00-21-07.jpg" alt="Photo 13">
+      <div class="gallery-carousel">
+        <div class="gallery-track">
+          <img src="images/gallery/photo_2024-03-14_17-14-06.jpg" alt="Photo 1">
+          <img src="images/gallery/photo_2024-03-14_17-14-07.jpg" alt="Photo 2">
+          <img src="images/gallery/photo_2024-03-26_18-29-55.jpg" alt="Photo 3">
+          <img src="images/gallery/photo_2024-04-04_12-58-24.jpg" alt="Photo 4">
+          <img src="images/gallery/photo_2024-04-08_15-27-59.jpg" alt="Photo 5">
+          <img src="images/gallery/photo_2025-01-22_19-31-26.jpg" alt="Photo 6">
+          <img src="images/gallery/photo_2025-01-22_19-31-27.jpg" alt="Photo 7">
+          <img src="images/gallery/photo_2025-01-23_22-14-19.jpg" alt="Photo 8">
+          <img src="images/gallery/photo_2025-01-24_18-48-39.jpg" alt="Photo 9">
+          <img src="images/gallery/photo_2025-01-25_15-49-19 (2).jpg" alt="Photo 10">
+          <img src="images/gallery/photo_2025-01-25_15-49-19.jpg" alt="Photo 11">
+          <img src="images/gallery/photo_2025-01-27_00-21-07 (2).jpg" alt="Photo 12">
+          <img src="images/gallery/photo_2025-01-27_00-21-07.jpg" alt="Photo 13">
+        </div>
+        <div class="gallery-dots"></div>
       </div>
     </div>
 
@@ -242,45 +245,101 @@
       window.addEventListener('resize', updateConnectors);
       window.addEventListener('scroll', onScroll);
 
-      // Automatically scroll the photo gallery when the user is not
-      // interacting with it. This gives the gallery a lively feel
-      // without requiring manual swipes. When the user scrolls or
-      // interacts with the gallery, auto‑scroll pauses and then
-      // resumes after a short delay.
-      const galleryContainer = document.querySelector('.gallery-images');
-      if (galleryContainer) {
-        let autoScrollDirection = 1;
-        let autoScrollEnabled = true;
-        let autoScrollResumeTimeout;
-        function autoScrollStep() {
-          if (autoScrollEnabled) {
-            // increment scrollLeft; speed of 1px per frame yields
-            // visible movement without being too fast. Adjust by
-            // multiplying with the direction. If we've reached
-            // either end of the scroll range, invert direction.
-            galleryContainer.scrollLeft += autoScrollDirection * 1;
-            if (galleryContainer.scrollLeft + galleryContainer.clientWidth >= galleryContainer.scrollWidth - 1) {
-              autoScrollDirection = -1;
-            }
-            if (galleryContainer.scrollLeft <= 0) {
-              autoScrollDirection = 1;
+      // Build an interactive slider for the photo gallery.
+      // The gallery displays one image at a time, supports swipe gestures,
+      // auto‑advances every few seconds, and shows dots for navigation.
+      const track = document.querySelector('.gallery-track');
+      const slides = track ? Array.from(track.children) : [];
+      const dotsContainer = document.querySelector('.gallery-dots');
+      let currentSlide = 0;
+      let autoSlideTimer;
+
+      function createDots() {
+        if (!dotsContainer) return;
+        dotsContainer.innerHTML = '';
+        slides.forEach((slide, index) => {
+          const dot = document.createElement('span');
+          dot.addEventListener('click', () => {
+            currentSlide = index;
+            updateGallery();
+            resetAutoSlide();
+          });
+          dotsContainer.appendChild(dot);
+        });
+      }
+
+      function updateGallery() {
+        if (!track || slides.length === 0) return;
+        const slideWidth = track.getBoundingClientRect().width / slides.length;
+        track.style.transform = `translateX(-${currentSlide * slideWidth}px)`;
+        if (dotsContainer) {
+          const dots = Array.from(dotsContainer.children);
+          dots.forEach((dot, idx) => {
+            dot.classList.toggle('active', idx === currentSlide);
+          });
+        }
+      }
+
+      function nextSlide() {
+        if (slides.length === 0) return;
+        currentSlide = (currentSlide + 1) % slides.length;
+        updateGallery();
+      }
+
+      function startAutoSlide() {
+        clearInterval(autoSlideTimer);
+        autoSlideTimer = setInterval(nextSlide, 5000);
+      }
+
+      function resetAutoSlide() {
+        clearInterval(autoSlideTimer);
+        autoSlideTimer = setTimeout(startAutoSlide, 5000);
+      }
+
+      if (track) {
+        // Set up widths so that each slide fills the gallery viewport.
+        track.style.width = `${slides.length * 100}%`;
+        slides.forEach(slide => {
+          slide.style.width = `${100 / slides.length}%`;
+        });
+        createDots();
+        updateGallery();
+        startAutoSlide();
+        // Swipe handling
+        let startX = 0;
+        let isDragging = false;
+        let deltaX = 0;
+        track.addEventListener('pointerdown', (e) => {
+          startX = e.clientX;
+          isDragging = true;
+          track.style.transition = 'none';
+          clearInterval(autoSlideTimer);
+        });
+        track.addEventListener('pointermove', (e) => {
+          if (!isDragging) return;
+          deltaX = e.clientX - startX;
+          const slideWidth = track.getBoundingClientRect().width / slides.length;
+          track.style.transform = `translateX(${ -currentSlide * slideWidth + deltaX }px)`;
+        });
+        function endDrag() {
+          if (!isDragging) return;
+          const slideWidth = track.getBoundingClientRect().width / slides.length;
+          // Snap to next or previous slide if dragged enough
+          if (Math.abs(deltaX) > slideWidth / 4) {
+            if (deltaX < 0 && currentSlide < slides.length - 1) {
+              currentSlide++;
+            } else if (deltaX > 0 && currentSlide > 0) {
+              currentSlide--;
             }
           }
-          requestAnimationFrame(autoScrollStep);
+          track.style.transition = 'transform 0.6s ease';
+          updateGallery();
+          startAutoSlide();
+          isDragging = false;
+          deltaX = 0;
         }
-        // Start the auto scroll loop
-        requestAnimationFrame(autoScrollStep);
-        // Pause auto scroll when the user manually scrolls the gallery
-        function pauseAutoScroll() {
-          autoScrollEnabled = false;
-          clearTimeout(autoScrollResumeTimeout);
-          autoScrollResumeTimeout = setTimeout(() => {
-            autoScrollEnabled = true;
-          }, 3000);
-        }
-        galleryContainer.addEventListener('scroll', pauseAutoScroll, { passive: true });
-        galleryContainer.addEventListener('wheel', pauseAutoScroll, { passive: true });
-        galleryContainer.addEventListener('touchstart', pauseAutoScroll, { passive: true });
+        track.addEventListener('pointerup', endDrag);
+        track.addEventListener('pointerleave', endDrag);
       }
     });
   </script>
