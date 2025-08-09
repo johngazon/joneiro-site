@@ -334,11 +334,11 @@ p {
 .gallery-carousel {
     position: relative;
     overflow: hidden;
-    /* Increase the height of the carousel so that images appear larger and
-       more prominent on the page. This gives a more cinematic feel,
-       particularly on desktop. For mobile, the height will scale down
-       automatically due to the viewport width. */
-    height: 400px;
+    /* Set the height of the carousel. A moderate value keeps
+       images large enough to be engaging without dominating the entire
+       screen. 360px strikes a balance between the original smaller
+       gallery and the oversized version. */
+    height: 360px;
 }
 .gallery-track {
     display: flex;
