@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Курс по ComfyUI — Подробности</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Floating profile overlay -->
+  <div class="profile-floating">
+    <img src="images/profile.jpg" alt="Джон Крылов">
+    <div class="profile-info">
+      <p class="profile-name">Джон Крылов</p>
+      <p class="profile-role">Режиссёр монтажа, моушн дизайнер</p>
+      <a href="https://t.me/Joneuro" class="profile-link">@Joneuro</a>
+    </div>
+  </div>
+
+  <main>
+    <section class="nodes">
+    <div class="node accent-blue">
+      <h1>О курсе</h1>
+      <p>Этот курс — практическое руководство по интеграции ComfyUI в ваш рабочий процесс. Вместе мы разберём, как использовать графовый интерфейс для генерации изображений, ускорять подготовку дизайнов и автоматизировать рутинные задачи.</p>
+    </div>
+    <div class="node accent-pink">
+      <h2>Структура курса</h2>
+      <ul>
+        <li>Введение в ComfyUI и основные понятия нодового интерфейса.</li>
+        <li>Настройка рабочей среды и установка необходимых моделей.</li>
+        <li>Создание и использование готовых workflow для типовых задач.</li>
+        <li>Продвинутые техники: обучение LoRA, точечное редактирование с Kontext и адаптация под ваши проекты.</li>
+        <li>Оптимизация процессов и экономия времени с помощью автоматизации.</li>
+      </ul>
+    </div>
+    <div class="node accent-orange">
+      <h2>Формат обучения</h2>
+      <p>Курс построен на коротких модулях с практическими заданиями. Для каждого задания есть детальная инструкция и готовый файл, который вы сможете загрузить в ComfyUI. В конце курса вы соберёте свой собственный рабочий сценарий, который будет экономить вам время и силы.</p>
+    </div>
+    </section>
+    <div class="footer-links">
+      <a class="link" href="index.html">Вернуться на главную</a>
+      <span> | </span>
+      <a class="link" href="page2.html">Узнать об уникальном методе</a>
+    </div>
+  </main>
+
+  <!-- Animated floating particles -->
+  <div class="flares">
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span>
+  </div>
+
+  <!-- SVG connectors between nodes -->
+  <svg class="connectors" xmlns="http://www.w3.org/2000/svg"></svg>
+
+  <!-- Script for drawing connectors on scroll/resize -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const nodes = Array.from(document.querySelectorAll('.node'));
+      const svg = document.querySelector('.connectors');
+      // Colour mapping based on accent classes for ports and connectors
+      const colourMap = {
+        'accent-blue': 'rgba(33, 203, 243, 0.6)',
+        'accent-pink': 'rgba(233, 30, 99, 0.6)',
+        'accent-green': 'rgba(76, 175, 80, 0.6)',
+        'accent-orange': 'rgba(255, 152, 0, 0.6)'
+      };
+      // Create input/output ports for each node and apply colour coding
+      nodes.forEach(node => {
+        const inputPort = document.createElement('div');
+        inputPort.classList.add('input-port');
+        const outputPort = document.createElement('div');
+        outputPort.classList.add('output-port');
+        let portColour = 'rgba(33, 203, 243, 1)';
+        node.classList.forEach(cls => {
+          if (colourMap[cls]) {
+            const rgb = colourMap[cls].replace(/rgba\(([^,]+), ([^,]+), ([^,]+), [^)]+\)/, '$1,$2,$3');
+            portColour = `rgb(${rgb})`;
+          }
+        });
+        inputPort.style.backgroundColor = portColour;
+        inputPort.style.borderColor = portColour;
+        outputPort.style.backgroundColor = portColour;
+        outputPort.style.borderColor = portColour;
+        node.appendChild(inputPort);
+        node.appendChild(outputPort);
+      });
+      // Precompute parallax factors for each node
+      const parallaxFactors = nodes.map((_, idx) => {
+        const direction = idx % 2 === 0 ? -1 : 1;
+        return direction * (0.02 + Math.random() * 0.02);
+      });
+      function updateParallax() {
+        const scrollY = window.scrollY || window.pageYOffset;
+        nodes.forEach((node, idx) => {
+          const factor = parallaxFactors[idx];
+          const translateX = scrollY * factor;
+          node.style.transform = `translateX(${translateX}px)`;
+        });
+      }
+      function updateConnectors() {
+        const docHeight = document.body.scrollHeight;
+        svg.setAttribute('height', docHeight);
+        svg.setAttribute('width', document.documentElement.clientWidth);
+        while (svg.firstChild) {
+          svg.removeChild(svg.firstChild);
+        }
+        nodes.forEach((node, idx) => {
+          // Connect each node to the next with orientation same side
+          const next = nodes[idx + 1];
+          if (!next) return;
+          const orientation = idx % 2 === 0 ? 'right' : 'left';
+          const startPort = orientation === 'right' ? node.querySelector('.output-port') : node.querySelector('.input-port');
+          const endPort = orientation === 'right' ? next.querySelector('.output-port') : next.querySelector('.input-port');
+          if (!startPort || !endPort) return;
+          const rect1 = startPort.getBoundingClientRect();
+          const rect2 = endPort.getBoundingClientRect();
+          let startX, endX;
+          if (orientation === 'right') {
+            startX = rect1.left + rect1.width + window.scrollX;
+            endX = rect2.left + rect2.width + window.scrollX;
+          } else {
+            startX = rect1.left + window.scrollX;
+            endX = rect2.left + window.scrollX;
+          }
+          const startY = rect1.top + rect1.height / 2 + window.scrollY;
+          const endY = rect2.top + rect2.height / 2 + window.scrollY;
+          const verticalDistance = Math.abs(endY - startY);
+          const baseOffset = Math.max(100, verticalDistance * 0.6);
+          const offset = orientation === 'right' ? baseOffset : -baseOffset;
+          const ctrl1X = startX + offset;
+          const ctrl1Y = startY;
+          const ctrl2X = endX + offset;
+          const ctrl2Y = endY;
+          const pathData = `M ${startX},${startY} C ${ctrl1X},${ctrl1Y} ${ctrl2X},${ctrl2Y} ${endX},${endY}`;
+          const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+          path.setAttribute('d', pathData);
+          let strokeColour = 'rgba(0, 200, 180, 0.6)';
+          node.classList.forEach(cls => {
+            if (colourMap[cls]) {
+              strokeColour = colourMap[cls];
+            }
+          });
+          path.setAttribute('stroke', strokeColour);
+          path.setAttribute('stroke-width', '2');
+          path.setAttribute('fill', 'none');
+          path.setAttribute('stroke-linecap', 'round');
+          path.setAttribute('stroke-dasharray', '6 6');
+          path.style.animation = 'dash-motion 4s linear infinite';
+          svg.appendChild(path);
+        });
+      }
+      function onScroll() {
+        updateParallax();
+        updateConnectors();
+      }
+      updateParallax();
+      updateConnectors();
+      window.addEventListener('resize', updateConnectors);
+      window.addEventListener('scroll', onScroll);
+    });
+  </script>
+</body>
+</html>
